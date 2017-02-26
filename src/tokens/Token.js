@@ -1,10 +1,11 @@
 
-let tokenIndex = 0;
 
-export default class Token {
+let count = 0;
+
+module.exports = class Token {
 
   constructor () {
-    this.id = "token-" + tokenIndex++;
+    this.id = "token-" + count++;
   }
 
   get type () {
@@ -19,4 +20,4 @@ export default class Token {
     return {type: this.type, id: this.id};
   }
 
-}
+};

@@ -1,6 +1,6 @@
-import Token from "./Token";
+const Token = require("./Token");
 
-export default class Group extends Token {
+module.exports = class Group extends Token {
 
   constructor ({tokens=[], min=null, max=null}) {
     super();
@@ -51,4 +51,4 @@ export default class Group extends Token {
     return json;
   }
 
-}
+};

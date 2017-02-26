@@ -1,6 +1,6 @@
-import Token from "./Token";
+const Token = require("./Token");
 
-export default class Constant extends Token {
+module.exports = class Constant extends Token {
 
   constructor ({name=""}) {
     super();
@@ -17,4 +17,4 @@ export default class Constant extends Token {
     return json;
   }
 
-}
+};

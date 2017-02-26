@@ -1,6 +1,6 @@
-import Token from "./Token";
+const Token = require("./Token");
 
-export default class Delimiter extends Token {
+module.exports = class Delimiter extends Token {
 
   constructor ({value=""}) {
     super();
@@ -17,4 +17,4 @@ export default class Delimiter extends Token {
     return json;
   }
 
-}
+};

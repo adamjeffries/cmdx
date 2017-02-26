@@ -1,13 +1,9 @@
-/**
- * Space Token - represents a possible whitespace
- */
+const Token = require("./Token");
 
-import Token from "./Token";
-
-export default class Space extends Token {
+module.exports = class Space extends Token {
 
   toString () {
     return " ";
   }
 
-}
+};

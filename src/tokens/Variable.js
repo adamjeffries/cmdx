@@ -1,6 +1,6 @@
-import Token from "./Token";
+const Token = require("./Token");
 
-export default class Variable extends Token {
+module.exports = class Variable extends Token {
 
   constructor ({name="", dataType="", dotdotdot=false}) {
     super();
@@ -26,4 +26,4 @@ export default class Variable extends Token {
     return json;
   }
 
-}
+};

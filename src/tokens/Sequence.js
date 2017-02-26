@@ -1,6 +1,6 @@
-import Token from "./Token";
+const Token = require("./Token");
 
-export default class Sequence extends Token {
+module.exports = class Sequence extends Token {
 
   constructor ({tokens=[]}) {
     super();
@@ -17,4 +17,4 @@ export default class Sequence extends Token {
     return json;
   }
 
-}
+};
