@@ -1,14 +1,14 @@
-import Token from "./tokens/Token";
-import Constant from "./tokens/Constant";
-import Group from "./tokens/Group";
-import Sequence from "./tokens/Sequence";
-import Space from "./tokens/Space";
-import Variable from "./tokens/Variable";
-import Delimiter from "./tokens/Delimiter";
+const Token = require("./tokens/Token");
+const Constant = require("./tokens/Constant");
+const Group = require("./tokens/Group");
+const Sequence = require("./tokens/Sequence");
+const Space = require("./tokens/Space");
+const Variable = require("./tokens/Variable");
+const Delimiter = require("./tokens/Delimiter");
 
 
 
-export function groupify (str) {
+function groupify (str) {
 
   let match, lastIndex = 0, levels = [[]], matchBrackets = /\[|]/g;
 
@@ -46,10 +46,10 @@ export function groupify (str) {
 
 // Converts to: ["str ", {type: "group", items: [], min: num, max: num}, "str "] - top level is still an array
 // If min or max are missing - it implies "any"
-export function quantifyGroups (groupified) {
+function quantify (groupified) {
   return groupified.map((item, index, arr) => {
     if (Array.isArray(item)) {
-      let quantifiedGroup = {type: "group", items: quantifyGroups(item)};
+      let quantifiedGroup = {type: "group", items: quantify(item)};
 
       // Look ahead for quantifiers
       let nextItem = arr[index + 1];
@@ -110,7 +110,7 @@ export function quantifyGroups (groupified) {
 
 // Split strings into an array of items:
 // - Constants, Delimiters, Variables, Spaces, Commas, Ors
-export function typify (quantifiedGroups) {
+function typify (quantifiedGroups) {
   return quantifiedGroups.map(item => {
     if (item && item.type == "group") { // Recurse Groups
       item.items = typify(item.items);
@@ -231,7 +231,7 @@ export function typify (quantifiedGroups) {
 }
 
 // Converts an array of typed items into an array of tokens
-export function tokenify (typedItems) {
+function tokenify (typedItems) {
 
   // Cluster tokens by Commas and Ors
   let clusters = [[[]]];
@@ -261,7 +261,18 @@ export function tokenify (typedItems) {
 
         if (item.type == "group") { // Recurse group items
           let tokens = tokenify(item.items);
-          if (tokens.length) return new Group({tokens, min: item.min, max: item.max});
+
+          // If the only child of a group is another group - combine
+          if (tokens.length === 1 && tokens[0] instanceof Group) {
+            let min = item.min;
+            let max = item.max;
+            if (min === null || (tokens[0].min !== null && min > tokens[0].min)) min = tokens[0].min;
+            if (max === null || (tokens[0].max !== null && max < tokens[0].max)) max = tokens[0].max;
+            return tokens[0];
+
+          } else if (tokens.length) {
+            return new Group({tokens, min: item.min, max: item.max});
+          }
 
         } else { // Basic Tokens
           switch (item.type) {
@@ -284,7 +295,7 @@ export function tokenify (typedItems) {
     }).filter(t => !!t);
 
     if (orTokens.length > 1) {
-      return new Group({tokens: orTokens, min: 1, max: 1}); // Choose 1
+      return new Group({tokens: orTokens, min: 0, max: 1}); // Choose 1
 
     } else if (orTokens.length === 1) {
       return orTokens[0];
@@ -294,7 +305,7 @@ export function tokenify (typedItems) {
 }
 
 
-// export default
+
 module.exports = function tokenize (usage) {
 
   // Empty usage gets an empty Token
@@ -307,7 +318,7 @@ module.exports = function tokenize (usage) {
   let grouped = groupify(usage);
 
   // Quantify - Find group quantifiers
-  let quantifiedGroups = quantifyGroups(grouped);
+  let quantifiedGroups = quantify(grouped);
 
   // Typify - parse strings into structured items
   let typedItems = typify(quantifiedGroups);
@@ -327,5 +338,7 @@ module.exports = function tokenize (usage) {
   }
 };
 
-
-
+module.exports.groupify = groupify;
+module.exports.quantify = quantify;
+module.exports.typify = typify;
+module.exports.tokenify = tokenify;
