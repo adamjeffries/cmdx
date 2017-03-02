@@ -9,6 +9,39 @@ module.exports = class Group extends Token {
     this.max = max;
   }
 
+  evaluate (state) {
+    let lastMatch;
+    let match = {state, tokens: this.tokens};
+    let numMatches = 0;
+    do {
+      lastMatch = match;
+      match = this.match(match);
+      numMatches++;
+      if (this.max && numMatches >= this.max) return match.state;
+    } while (match);
+
+    state = match ? match.state : lastMatch.state;
+
+
+
+    if (this.min === null || typeof this.min === "undefined" || numMatches >= this.min) return state;
+  }
+
+  isValid (state) {
+
+  }
+
+  match (match) {
+    for (let i = 0; i < match.tokens.length; i++) {
+      let nextState = match.tokens[i].evaluate(match.state);
+      if (nextState) {
+        let matchedTokens = match.tokens.slice(0);
+        matchedTokens.splice(i, 1);
+        return {state: nextState, tokens: matchedTokens};
+      }
+    }
+  }
+
   get quantifier () {
     if (!this.max) {
       if (this.min === 0) {

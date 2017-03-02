@@ -6,8 +6,8 @@ module.exports = class Space extends Token {
     let num = this.numPrefixWhitespaces(state.unmatched);
 
     if (num < 1) {
-      // Check if the parent is a Space token - if so, continue
-      if (state.parentType === this.type) return state;
+      // If the parent is missing or a space, continue
+      if (!state.parent || state.parentType === this.type) return state;
 
     } else {
       return state.child({
