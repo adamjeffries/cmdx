@@ -327,7 +327,7 @@ module.exports = function tokenize (usage) {
   let tokens = tokenify(typedItems);
 
   // If more than one token at the top level, convert to a sequence
-  if (tokens.length > 0) {
+  if (tokens.length > 1) {
     return new Sequence({tokens});
 
   } else if (tokens.length === 1) {
