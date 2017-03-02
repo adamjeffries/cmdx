@@ -12,6 +12,14 @@ module.exports = class Token {
     return this.constructor.name;
   }
 
+  evaluate (state) {
+    return null;
+  }
+
+  isValid (state) {
+    return false;
+  }
+
   toString () {
     return this.type;
   }
