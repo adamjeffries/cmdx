@@ -7,12 +7,12 @@ module.exports = class State {
     options = options || {};
 
     this.parent = options.parent;
-    this.command = options.command;
     this.token = options.token;
     this.input = options.input || "";
     this.offset = options.offset || 0;
     this.args = options.args || {};
     this.defaults = options.defaults || {};
+    this.dataTypes = options.dataTypes || {};
   }
 
   child (options) {
@@ -20,12 +20,12 @@ module.exports = class State {
 
     return new State({
       parent: this,
-      command: this.command,
       token: options.token,
       input: this.input,
       offset: options.offset ? Math.min(options.offset, this.input.length) : this.offset,
       args: options.args ? Object.assign({}, this.args, options.args) : this.args,
-      defaults: options.defaults ? Object.assign({}, this.defaults, options.defaults) : this.defaults
+      defaults: options.defaults ? Object.assign({}, this.defaults, options.defaults) : this.defaults,
+      dataTypes: options.dataTypes || {}
     });
   }
 
@@ -47,7 +47,8 @@ module.exports = class State {
       input: this.input,
       offset: this.offset,
       args: this.args,
-      defaults: this.defaults
+      defaults: this.defaults,
+      dataTypes: Object.keys(this.dataTypes)
     };
   }
 

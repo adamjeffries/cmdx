@@ -1,5 +1,7 @@
 const Token = require("./Token");
 
+
+
 module.exports = class Delimiter extends Token {
 
   constructor ({value=""}) {

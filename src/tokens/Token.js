@@ -1,5 +1,3 @@
-
-
 let count = 0;
 
 module.exports = class Token {

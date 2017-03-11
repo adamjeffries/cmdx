@@ -47,8 +47,8 @@ module.exports = class Variable extends Token {
 
   formatValue (value, state) {
     let fn = dataTypes[this.dataType.toLowerCase()];
-    if (state.command && this.dataType in state.command.dataTypes) {
-      fn = state.command.dataTypes[this.dataType];
+    if (state.dataTypes && this.dataType in state.dataTypes) {
+      fn = state.dataTypes[this.dataType];
     }
 
     if (fn instanceof Function) {

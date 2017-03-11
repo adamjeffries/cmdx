@@ -1,5 +1,7 @@
 const Token = require("./Token");
 
+
+
 module.exports = class Constant extends Token {
 
   constructor ({name=""}) {

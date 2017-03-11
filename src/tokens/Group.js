@@ -1,5 +1,7 @@
 const Token = require("./Token");
 
+
+
 module.exports = class Group extends Token {
 
   constructor ({tokens=[], min=null, max=null}) {
@@ -22,13 +24,14 @@ module.exports = class Group extends Token {
 
     state = match ? match.state : lastMatch.state;
 
-
-
     if (this.min === null || typeof this.min === "undefined" || numMatches >= this.min) return state;
   }
 
   isValid (state) {
-
+    try {
+      return !!this.evaluate(state);
+    } catch (e) {}
+    return false;
   }
 
   match (match) {
