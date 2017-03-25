@@ -1,4 +1,7 @@
+"use strict";
+
 const Token = require("./Token");
+const constants = require("../constants");
 
 
 
@@ -6,6 +9,9 @@ module.exports = class Group extends Token {
 
   constructor ({tokens=[], min=null, max=null}) {
     super();
+    if (!Array.isArray(tokens) || !tokens.length || !tokens.every(t => t instanceof Token)) {
+      throw new TypeError(constants.ERR_TOKENS_ARRAY);
+    }
     this.tokens = tokens;
     this.min = min;
     this.max = max;
@@ -48,27 +54,27 @@ module.exports = class Group extends Token {
   get quantifier () {
     if (!this.max) {
       if (this.min === 0) {
-        return "*";
+        return constants.QUANTIFIER_ZEROPLUS;
 
       } else if (this.min === 1) {
-        return "+";
+        return constants.QUANTIFIER_ONEPLUS;
 
       } else if (this.min > 1) {
-        return `{${this.min},}`;
+        return constants.QUANTIFIER_START + this.min + constants.QUANTIFIER_DIVIDER + constants.QUANTIFIER_END;
       }
 
     } else {
       if (this.min === 0 && this.max === 1) {
-        return "?";
+        return constants.QUANTIFIER_ZEROORONE;
 
       } else if (this.min === this.max) {
-        return `{${this.min}}`;
+        return constants.QUANTIFIER_START + this.min + constants.QUANTIFIER_END;
 
       } else if (this.min === null) {
-        return `{,${this.max}}`;
+        return constants.QUANTIFIER_START + constants.QUANTIFIER_DIVIDER + this.max + constants.QUANTIFIER_END;
 
       } else {
-        return `{${this.min},${this.max}}`;
+        return constants.QUANTIFIER_START + this.min + constants.QUANTIFIER_DIVIDER + this.max + constants.QUANTIFIER_END;
       }
     }
 
@@ -76,7 +82,10 @@ module.exports = class Group extends Token {
   }
 
   toString () {
-    return `[${this.tokens.map(t => t.toString()).join(",")}]${this.quantifier}`;
+    return constants.GROUP_START +
+      this.tokens.map(t => t.toString()).join(constants.GROUP_DIVIDER) +
+      constants.GROUP_END +
+      this.quantifier;
   }
 
   toJSON () {

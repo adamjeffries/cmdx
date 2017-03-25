@@ -1,4 +1,7 @@
+"use strict";
+
 const Token = require("./Token");
+const constants = require("../constants");
 
 
 
@@ -6,6 +9,9 @@ module.exports = class Sequence extends Token {
 
   constructor ({tokens=[]}) {
     super();
+    if (!Array.isArray(tokens) || !tokens.length || !tokens.every(t => t instanceof Token)) {
+      throw new TypeError(constants.ERR_TOKENS_ARRAY);
+    }
     this.tokens = tokens;
   }
 
@@ -17,10 +23,10 @@ module.exports = class Sequence extends Token {
   }
 
   isValid (state) {
-    for (let i = 0; i < this.tokens.length && state; i++) {
-      if (!this.tokens[i].isValid(state)) return false;
-    }
-    return true;
+    try {
+      return !!this.evaluate(state);
+    } catch (e) {}
+    return false;
   }
 
   toString () {

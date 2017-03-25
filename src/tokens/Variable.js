@@ -1,14 +1,20 @@
+"use strict";
+
 const Token = require("./Token");
 const dataTypes = require("../dataTypes");
+const constants = require("../constants");
 const NEXTVALUE = /^(?:[^\s"]+|"[^"]*"|[\n\t^"]+)/g;
+
+
 
 module.exports = class Variable extends Token {
 
-  constructor ({name="", dataType="", dotdotdot=false}) {
+  constructor ({name="", dataType="", remainder=false}) {
     super();
+    if (!name || typeof name !== "string") throw new TypeError(constants.ERR_NAME_STRING);
     this.name = name;
     this.dataType = dataType;
-    this.dotdotdot = dotdotdot;
+    this.remainder = remainder;
   }
 
   evaluate (state) {
@@ -34,7 +40,7 @@ module.exports = class Variable extends Token {
   }
 
   getNext (state) {
-    if (this.dotdotdot) return {value: state.unmatched, offset: state.unmatched.length};
+    if (this.remainder) return {value: state.unmatched, offset: state.unmatched.length};
 
     // Match value before the next space (or between quotes)
     let match = state.unmatched.match(NEXTVALUE);
@@ -61,7 +67,7 @@ module.exports = class Variable extends Token {
   toString () {
     let str = this.name;
     if (this.dataType !== "String") str = this.dataType + ":" + str;
-    if (this.dotdotdot) str += "...";
+    if (this.remainder) str += constants.VARIABLE_REMAINDER;
     return `<${str}>`;
   }
 
@@ -69,7 +75,7 @@ module.exports = class Variable extends Token {
     let json = super.toJSON();
     json.name = this.name;
     json.dataType = this.dataType;
-    json.dotdotdot = this.dotdotdot;
+    json.remainder = this.remainder;
     return json;
   }
 

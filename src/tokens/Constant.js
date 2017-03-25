@@ -1,4 +1,7 @@
+"use strict";
+
 const Token = require("./Token");
+const constants = require("../constants");
 
 
 
@@ -6,11 +9,12 @@ module.exports = class Constant extends Token {
 
   constructor ({name=""}) {
     super();
+    if (!name || typeof name !== "string") throw new TypeError(constants.ERR_NAME_STRING);
     this.name = name;
   }
 
   evaluate (state) {
-    if (!this.isValid(state)) return;
+    if (state.unmatched.indexOf(this.name) !== 0) return;
 
     return state.child({
       token: this,
@@ -20,7 +24,7 @@ module.exports = class Constant extends Token {
   }
 
   isValid (state) {
-    return state.unmatched.indexOf(this.name) === 0;
+    return state.unmatched === this.name;
   }
 
   toString () {
