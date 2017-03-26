@@ -8,7 +8,7 @@ module.exports = class Token {
     this.id = "token-" + count++;
   }
 
-  get type () {
+  get cname () {
     return this.constructor.name;
   }
 
@@ -21,11 +21,11 @@ module.exports = class Token {
   }
 
   toString () {
-    return this.type;
+    return this.cname;
   }
 
   toJSON () {
-    return {type: this.type, id: this.id};
+    return {cname: this.cname, id: this.id};
   }
 
 };

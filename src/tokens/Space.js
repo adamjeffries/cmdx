@@ -11,7 +11,7 @@ module.exports = class Space extends Token {
 
     if (num < 1) {
       // If the parent is missing or a space, continue
-      if (!state.parent || state.parentType === this.type) return state;
+      if (!state.parent || state.parentTokenCName === this.cname) return state;
 
     } else {
       return state.child({
