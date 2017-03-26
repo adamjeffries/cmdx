@@ -1,3 +1,5 @@
+"use strict";
+
 const Token = require("./tokens/Token");
 const Constant = require("./tokens/Constant");
 const Group = require("./tokens/Group");
@@ -5,6 +7,7 @@ const Sequence = require("./tokens/Sequence");
 const Space = require("./tokens/Space");
 const Variable = require("./tokens/Variable");
 const Delimiter = require("./tokens/Delimiter");
+const constants = require("./constants");
 
 
 
@@ -18,12 +21,12 @@ function groupify (str) {
     // Content between brackets
     if (lastIndex < match.index) curLevel.push(str.substring(lastIndex, match.index));
 
-    if (match[0] === "[") { // Opened Bracket - move up a level
+    if (match[0] === constants.GROUP_START) { // Opened Bracket - move up a level
       let nextLevel = [];
       curLevel.push(nextLevel);
       levels.push(nextLevel);
 
-    } else if (match[0] === "]") { // Closed Bracket - move down a level
+    } else if (match[0] === constants.GROUP_END) { // Closed Bracket - move down a level
       if (levels.length <= 1) throw "Unbalanced Group";
       levels.pop();
     }
@@ -56,24 +59,24 @@ function quantify (groupified) {
       if (typeof nextItem === "string") {
         let sliceTo = 0;
 
-        if (nextItem[0] == "*") { // 0+
+        if (nextItem[0] == constants.QUANTIFIER_ZEROPLUS) {
           quantifiedGroup.min = 0;
           sliceTo = 1;
 
-        } else if (nextItem[0] == "?") { // 0 to 1
+        } else if (nextItem[0] == constants.QUANTIFIER_ZEROORONE) {
           quantifiedGroup.min = 0;
           quantifiedGroup.max = 1;
           sliceTo = 1;
 
-        } else if (nextItem[0] == "+") { // 1+
+        } else if (nextItem[0] == constants.QUANTIFIER_ONEPLUS) {
           quantifiedGroup.min = 1;
           sliceTo = 1;
 
-        } else if (nextItem[0] == "{") { // {min, max}
-          sliceTo = nextItem.indexOf("}") + 1;
+        } else if (nextItem[0] == constants.QUANTIFIER_START) { // {min, max}
+          sliceTo = nextItem.indexOf(constants.QUANTIFIER_END) + 1;
           if (sliceTo < 0) throw "Missing quantifier closing curly brace";
 
-          nextItem.substring(1, sliceTo - 1).split(",").forEach((n, i, arr) => {
+          nextItem.substring(1, sliceTo - 1).split(constants.QUANTIFIER_DIVIDER).forEach((n, i, arr) => {
             n = n.trim();
             if (i > 1) {
               throw "Invalid quantifier format";
@@ -109,7 +112,7 @@ function quantify (groupified) {
 
 
 // Split strings into an array of items:
-// - Constants, Delimiters, Variables, Spaces, Commas, Ors
+// - Constants, Delimiters, Variables, Spaces, Dividers, Ors
 function typify (quantifiedGroups) {
   return quantifiedGroups.map(item => {
     if (item && item.type == "group") { // Recurse Groups
@@ -120,13 +123,13 @@ function typify (quantifiedGroups) {
     if (typeof item != "string") throw "Unable to itemize - not a string";
 
     let items = [];
-    let type = null; // space, variable, delimiter, constant, comma, or
+    let type = null; // space, variable, delimiter, constant, divider, or
     let typeStart = 0;
 
     // Walk the String
     item.split("").forEach((char, index) => {
 
-      if (type == "variable" && char !== ">") {
+      if (type == "variable" && char !== constants.VARIABLE_END) {
         if (!/[a-zA-Z0-9:.]/g.test(char)) throw "Invalid variable name";
         return;
         // /^[a-zA-Z][a-zA-Z0-9:]*$/g.test("3aAsd:f9");
@@ -139,9 +142,9 @@ function typify (quantifiedGroups) {
           typeStart = index;
         }
 
-      } else if (char === ",") { // comma
+      } else if (char === constants.GROUP_DIVIDER) {
         if (type) items.push({type, value: item.substring(typeStart, index)});
-        type = "comma";
+        type = "divider";
         typeStart = index;
 
       } else if (char === "|") { // or
@@ -163,7 +166,7 @@ function typify (quantifiedGroups) {
           dataType: "String"
         };
 
-        let nameSplit = variable.name.split(":");
+        let nameSplit = variable.name.split(constants.VARIABLE_DIVIDER);
         if (nameSplit.length > 2) throw "Invalid variable: " + name;
 
         // Custom Data Type
@@ -233,29 +236,29 @@ function typify (quantifiedGroups) {
 // Converts an array of typed items into an array of tokens
 function tokenify (typedItems) {
 
-  // Cluster tokens by Commas and Ors
+  // Cluster tokens by Dividers and Ors
   let clusters = [[[]]];
   typedItems.forEach(item => {
-    if (item.type === "comma") {
+    if (item.type === "divider") {
       clusters.push([[]]);
 
     } else {
-      let commaCluster = clusters[clusters.length - 1];
+      let dividerCluster = clusters[clusters.length - 1];
 
       if (item.type === "or") {
-        commaCluster.push([]);
+        dividerCluster.push([]);
 
       } else {
-        let orCluster = commaCluster[commaCluster.length - 1];
+        let orCluster = dividerCluster[dividerCluster.length - 1];
         orCluster.push(item);
       }
     }
   });
 
   // Construct Tokens - Reduce and turn clusters into sequences/groups
-  return clusters.map(commaCluster => {
+  return clusters.map(dividerCluster => {
 
-    let orTokens = commaCluster.map(orCluster => {
+    let orTokens = dividerCluster.map(orCluster => {
 
       let sequenceTokens = orCluster.map(item => {
 
@@ -278,7 +281,7 @@ function tokenify (typedItems) {
           switch (item.type) {
             case "space": return new Space();
             case "constant": return new Constant({name: item.value});
-            case "variable": return new Variable({name: item.name, dataType: item.dataType, dotdotdot: !!item.dotdotdot});
+            case "variable": return new Variable({name: item.name, type: item.dataType, remainder: !!item.remainder});
             case "delimiter": return new Delimiter({value: item.value});
           }
         }

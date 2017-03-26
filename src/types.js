@@ -15,7 +15,7 @@ function isPlainObject (o) {
 
 
 
-let dataTypes = {
+let types = {
 
   string (value) {
     return value + "";
@@ -38,13 +38,15 @@ let dataTypes = {
   },
 
   number (value) {
-    if (isNaN(value)) return;
-    return parseFloat(value);
+    if (!isNaN(value)) return parseFloat(value);
   },
 
   integer (value) {
-    if (isNaN(value)) return;
-    return parseInt(value);
+    if (!isNaN(value)) return parseInt(value);
+  },
+
+  date () {
+    // TODO
   }
 
 };
@@ -52,12 +54,12 @@ let dataTypes = {
 
 
 // Aliases
-dataTypes.bool = dataTypes.boolean;
-dataTypes.float = dataTypes.number;
-dataTypes.o = dataTypes.object;
-dataTypes.hashmap = dataTypes.object;
-dataTypes.hash = dataTypes.object;
+types.bool = types.boolean;
+types.float = types.number;
+types.o = types.object;
+types.hashmap = types.object;
+types.hash = types.object;
 
 
 
-module.exports = dataTypes;
+module.exports = types;

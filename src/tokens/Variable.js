@@ -103,9 +103,9 @@ module.exports = class Variable extends Token {
   toString () {
     let str = this.name;
     if (typeof this.type === "function") {
-      str = "custom:" + str;
+      str = "custom" + constants.VARIABLE_DIVIDER + str;
     } else if (typeof this.type === "string" && this.type.toLowerCase() !== "string") {
-      str = this.type + ":" + str;
+      str = this.type + constants.VARIABLE_DIVIDER + str;
     }
     if (this.remainder) str += constants.VARIABLE_REMAINDER;
     return `<${str}>`;

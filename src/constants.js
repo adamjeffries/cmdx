@@ -1,6 +1,7 @@
 module.exports = {
   VARIABLE_START: "<",
   VARIABLE_END: ">",
+  VARIABLE_DIVIDER: ":",
   VARIABLE_REMAINDER: "...",
   GROUP_START: "[",
   GROUP_END: "]",
