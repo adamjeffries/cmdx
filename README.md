@@ -1,5 +1,5 @@
-# cmdx
-Command Line Expressions - Construct Node.js CLI's with Ease!
+![cmdx](cmdx.png)
+Command Line Expressions
 
 # NOT READY FOR USE!!!!!!!!
 
@@ -9,80 +9,33 @@ Construct [Node.js](http://nodejs.org) [CLI's](https://en.wikipedia.org/wiki/Com
 
 npm install cmdx
 
-## Tutorial
+## Quick Start Tutorial
 
-This example mimics a subset of the well known `git` CLI.
-
-1. Create `cli.js` and define the commands using `cmdx`
+1. Create `math.js` and define a basic command:
 
 ```js
 #!/usr/bin/env node
 
 const cmdx = require("cmdx");
 
-let git2 = cmdx({
-
-  name: "",
+const args = cmdx
+  .usage("<Number:a> <op> <Number:b> [--floor, --round]?")
+  .arg("op", {values: ["+", "-", "/", "*"]})
+  .parse(process.argv);
   
-  version: "2.5.0",
-
-  commands: {
-
-    // Shorthand - key = expression and value = executable
-    "status [-v | --verbose] [<pathspec>...]" () { //
-      return "Checking the status I see";
-    },
-    
-    // 
-    "commit [-m <message>, --amend]{0,1} (--verbose|-v, --quiet|-q, --dry-run)" () {
-    
-    },
-    
-    "pull (--rebase|-r, --verbose|-v) (<repo> (<refspec>))": {
-      args: {
-        
-      }
-    },
-    
-    // Fully Qualified Command - including Option details
-    `push [--all | --mirror | --tags] [--force | -f]
-        [--force-with-lease[=<refname>[:<expect>]]]
-        [<repository> [<refspec>...]]`: {
-        
-      name: "git-push - Update remote refs along with associated objects",
-      description: "Updates remote refs using local refs, while sending objects necessary to complete the given refs.",
-      manual: "",
-      examples: {
-        "push origin": "Without additional configuration, pushes the current branch...",
-        "git push mothership master:satellite/master dev:satellite/dev": "Use the source ref that matches master (e.g.  refs/heads/master) ...",
-      },
-      options: {
-        "<repository>": {
-          description: "The remote repository that is destination of a push operation...",
-          suggestions () {
-            return ["master", "gh-pages", "release"];
-          }
-        },
-        "<refspec>...": {
-          description: "Specify what destination ref to update with what source..."
-        },
-        "--all": {
-          description: "Push all branches (i.e. refs under refs/heads/); cannot be used with other <refspec>."
-        },
-        "-f, --force": {
-          description: "Usually, the command refuses to update a remote ref that is not an ancestor...",
-        }
-      }
-    }
-  }
-
-});
-
-
-let response = git2.run(process.argv);
-
-console.log(response);
-
+if (!args) return console.log("Unrecognized Command");  
+  
+let value, a = args.a, b = args.b;
+switch (args.op) {
+  case "+": value = a + b; break;
+  case "-": value = a - b; break;
+  case "*": value = a * b; break;
+  case "/": value = a / b; break;
+  default: value = 0;
+}
+if (args["--floor"]) value = Math.floor(value);
+if (args["--round"]) value = Math.round(value);
+console.log(`${a} ${op} ${b} = ${value}`);  
 ```
 
 2. Create `package.json`
@@ -90,7 +43,7 @@ console.log(response);
 ```json
 {
   "bin": {
-    "git2": "./cli.js"
+    "math": "./math.js"
   }
 }
 ```
@@ -101,5 +54,15 @@ console.log(response);
 npm install -g
 ```
 
-4. 
+4. Run the math command
 
+```bash
+> math 1 + notanumber
+Unrecognized Command
+
+> math 1.2 + 2.3
+3.5
+
+> math 1.2 * 2.3 --floor
+2
+```

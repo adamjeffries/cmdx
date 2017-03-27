@@ -1,10 +1,10 @@
 {
   "name": "cmdx",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Command Line Expressions - Construct Node.js CLI's with Ease",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test.js"
+    "test": "./node_modules/mocha/bin/mocha --harmony tests/**/*.test.js"
   },
   "repository": {
     "type": "git",
