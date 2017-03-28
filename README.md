@@ -3,7 +3,7 @@
 ![cmdx](cmdx.gif)
 ==========
 
-<p align="center">Construct [Node.js](http://nodejs.org) [CLI's](https://en.wikipedia.org/wiki/Command-line_interface) with ease, inspired by Regular Expression Syntax.</p>
+<p align="center">Construct <a href="http://nodejs.org">Node.js</a> <a href="https://en.wikipedia.org/wiki/Command-line_interface">CLI's</a> with ease, inspired by Regular Expression Syntax.</p>
 
 ## Tutorial
 
