@@ -1,17 +1,13 @@
-![cmdx](cmdx.gif)
-<p align="center"><b>Command Line Expressions</b></p>
-
 # NOT READY FOR USE!!!!!!!!
 
-Construct [Node.js](http://nodejs.org) [CLI's](https://en.wikipedia.org/wiki/Command-line_interface) with ease, inspired by Regular Expression Syntax.
+![cmdx](cmdx.gif)
+==========
 
-## Installation
+<p align="center">Construct [Node.js](http://nodejs.org) [CLI's](https://en.wikipedia.org/wiki/Command-line_interface) with ease, inspired by Regular Expression Syntax.</p>
 
-npm install cmdx
+## Tutorial
 
-## Quick Start Tutorial
-
-1. Create `math.js` and define a basic command:
+1. Create `cli.js` and define a basic command:
 
 ```js
 #!/usr/bin/env node
@@ -43,7 +39,7 @@ console.log(`${a} ${op} ${b} = ${value}`);
 ```json
 {
   "bin": {
-    "math": "./math.js"
+    "math": "./cli.js"
   }
 }
 ```
