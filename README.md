@@ -1,5 +1,5 @@
-![cmdx](cmdx.png)
-Command Line Expressions
+![cmdx](cmdx.gif)
+<p align="center"><b>Command Line Expressions</b></p>
 
 # NOT READY FOR USE!!!!!!!!
 
