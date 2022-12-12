@@ -1,4 +1,4 @@
-# NOT READY FOR USE!!!!!!!!
+# ARCHIVED / DEPRECATED
 
 ![cmdx](cmdx.gif)
 ==========
